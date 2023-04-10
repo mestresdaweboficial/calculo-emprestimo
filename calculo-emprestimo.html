@@ -1,0 +1,127 @@
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<style>
+
+      /* Definindo o estilo do body */
+      body {
+        background-color: #F9F9F9;
+        font-family: Arial, sans-serif;
+        font-size: 16px;
+        margin: 0;
+        padding: 0;
+      }
+	  
+.calculator {
+        background-color: #FFF;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 24px;
+        width: 400px;
+		margin: 0 auto;
+}
+
+.form-group {
+  margin-bottom: 15px;
+}
+
+label {
+  display: block;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+input[type="range"] {
+  width: 100%;
+  margin-top: 5px;
+}
+
+.results {
+  margin-top: 30px;
+  border-top: 1px solid #ccc;
+  padding-top: 20px;
+}
+
+</style>
+
+<div class="calculator">
+  <h2>Simulador de Empréstimo</h2>
+  <form>
+    <div class="form-group">
+      <label for="loan-amount">Valor do Empréstimo:</label>
+      <input type="range" class="form-control" id="loan-amount" min="1000" max="30000" step="1000" value="R$ 5.000,00">
+	  <span id="loan-amount-value">5000</span>
+    </div>
+    <div class="form-group">
+      <label for="loan-term">Prazo do Empréstimo:</label>
+      <input type="range" class="form-control" id="loan-term" min="6" max="36" step="6" value="12">
+	  <span id="loan-term-value">6</span>
+    </div>
+  </form>
+
+  <div class="results">
+    <h3>Resultado:</h3>
+    <p><span style="font-weight: bold;" id="total-months">0</span> parcelas de <span style="font-weight: bold;" id="monthly-payment">R$0.00</span></p>
+	<p>Total: <span style="font-weight: bold;" id="total-payment">R$0.00</span></p>
+  </div>
+</div>
+
+<script>
+
+  const loanAmount = document.getElementById("loan-amount");
+  const loanAmountValue = document.getElementById("loan-amount-value");
+
+  const formatter = new Intl.NumberFormat('pt-BR', {
+  style: 'currency',
+  currency: 'BRL' 
+  });
+
+  loanAmount.oninput = function() {
+    loanAmountValue.innerHTML = formatter.format(loanAmount.value);
+  }
+  
+  const loanTAmount = document.getElementById("loan-term");
+  const loanTAmountValue = document.getElementById("loan-term-value");
+
+  loanTAmount.oninput = function() {
+    loanTAmountValue.innerHTML = loanTAmount.value;
+  }
+
+$(document).ready(function() {
+  // Get loan amount, interest rate, and loan term values
+  var loanAmount = $('#loan-amount').val();
+  // Juros AQUI <--------------------------------------------------
+  var interestRate = 4.75;
+  // Juros AQUI <--------------------------------------------------
+  var interestAnRate = 0.38;
+  var loanTerm = $('#loan-term').val();
+
+  // Calculate monthly payment, total payment, and total months
+  var monthlyRate = interestRate / 1200;
+  var totalMonths = loanTerm;
+  var monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalMonths));
+  var totalPayment = monthlyPayment * totalMonths;
+
+  // Display results
+  $('#monthly-payment').text('' + monthlyPayment.toFixed(2));
+  $('#total-payment').text('' + totalPayment.toFixed(2));
+  $('#total-months').text(totalMonths);
+
+$('#loan-amount, #loan-term').on('input', function() {
+// Pega valores
+loanAmount = $('#loan-amount').val();
+// Juros + Taxa de adesão <--------------------------------------------------
+interestRate = 7.774; 
+loanTerm = $('#loan-term').val();
+// Calcula os novos resultados
+monthlyRate = interestRate / 100;
+totalMonths = loanTerm;
+monthlyPayment = (loanAmount * monthlyRate) / (1 - Math.pow(1 + monthlyRate, -totalMonths));
+totalPayment = monthlyPayment * totalMonths + 200; // Taxa de Adesão
+
+// Atualiza os resultados
+$('#monthly-payment').text(formatter.format(monthlyPayment.toFixed(2)));
+$('#total-payment').text(formatter.format(totalPayment.toFixed(2)));
+$('#total-months').text(totalMonths);
+});
+});
+</script>
+
